@@ -1,0 +1,33 @@
+name: 'Python'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    
+jobs:
+    python:
+        name: 'Python'
+        runs-on: ubuntu-latest
+        strategy:
+          matrix:
+            python-version: [3.8]
+        steps:
+            
+          - name: Checkout
+            uses: actions/checkout@v2
+
+          - name: Build code
+            run: |
+              pip3 install --target ./package pyTelegramBotAPI requests
+              cd package
+              zip -r ../devops-marathon.zip .
+              cd ..
+              zip devops-marathon.zip tg-bot.py
+
+          - name: Upload actifacts
+            uses: actions/upload-artifact@v2
+            with:
+              name: tg-bot
+              path: devops-marathon.zip

@@ -1,0 +1,69 @@
+- name: devops-marathon
+  gather_facts: false
+  hosts: [all]
+  become: yes
+
+  tasks:
+    - name: Install yum utils
+      yum:
+        name: yum-utils
+        state: latest
+
+    - name: Install device-mapper-persistent-data
+      yum:
+        name: device-mapper-persistent-data
+        state: latest
+
+    - name: Install iptables
+      yum:
+        name: iptables
+        state: latest
+
+    - name: Install lvm2
+      yum:
+        name: lvm2
+        state: latest
+
+    - name: Install python3
+      yum:
+        name: python3
+        state: latest   
+
+    - name: Install docker pip
+      pip:
+        name: docker
+
+    - name: Add Docker repo
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docer-ce.repo
+      become: yes
+
+    - name: Install Docker
+      package:
+        name: docker-ce
+        state: latest
+      become: yes
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      become: yes
+
+    - name: Add user ec2-user to docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+      become: yes
+
+    - name: Create APP
+      docker_container:
+        name: devops-marathon
+        image: "{{ repo }}"
+        pull: true
+        state: started
+        ports:
+          - "9900:9900"

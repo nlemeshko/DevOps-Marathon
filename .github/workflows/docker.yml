@@ -1,0 +1,59 @@
+name: docker
+
+on:
+  workflow_run:
+    workflows:
+      - Terraform
+    types: 
+      - completed
+    branches:
+      - main
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: terraform.yml
+          workflow_conclusion: success
+          name: terraform
+
+      - id: rds
+        run: |
+            host=$(grep "rds_endpoint" terraform.log | awk -F  ":" '{print $1}' )
+            host=${host//'rds_endpoint = "'}
+            echo "host=$(echo $host)" >> $GITHUB_ENV
+
+      -
+        name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ${{ secrets.DOCKERREPO }}
+          build-args: |
+              username=${{ secrets.username }}
+              password=${{ secrets.password }}
+              db_username=${{ secrets.DB_USERNAME }}
+              db_password=${{ secrets.DB_PASSWORD }}
+              db_host=${{ env.host }}
+              db_name=${{ secrets.DB_NAME }}
+      -
+        name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

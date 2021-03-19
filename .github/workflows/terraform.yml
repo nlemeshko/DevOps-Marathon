@@ -1,0 +1,75 @@
+name: 'Terraform'
+
+on:
+  workflow_run:
+    workflows:
+      - Python
+    types: 
+      - completed
+    branches:
+      - main
+    
+jobs:
+    terraform:
+        name: 'Terraform'
+        runs-on: ubuntu-latest
+        steps:
+          
+          - name: Checkout
+            uses: actions/checkout@v2
+
+          - name: Download artifact
+            uses: dawidd6/action-download-artifact@v2
+            with:
+              github_token: ${{secrets.GITHUB_TOKEN}}
+              workflow: python.yml
+              workflow_conclusion: success
+              name: tg-bot
+
+          - id: move
+            run: |
+                mv devops-marathon.zip terraform/
+        
+          - name: Setup Terraform
+            uses: hashicorp/setup-terraform@v1
+            with:
+              cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+          
+          - name: Terraform Format
+            id: fmt
+            working-directory: 'terraform'
+            run: terraform fmt
+          
+          - name: Setup Terraform variables
+            working-directory: 'terraform'
+            id: vars
+            run: |-
+              cat > devops.auto.tfvars <<EOF
+              db_name = "${{ secrets.DB_NAME }}"
+              db_username = "${{ secrets.DB_USERNAME }}"
+              db_password = "${{ secrets.DB_PASSWORD }}"
+              username = "${{ secrets.USERNAME }}"
+              password = "${{ secrets.PASSWORD }}"
+              bottoken = "${{ secrets.BOTTOKEN }}"
+              adminchat = "${{ secrets.ADMINCHAT }}"
+              EOF
+            
+          - name: Terraform Init
+            id: init
+            working-directory: 'terraform'
+            run: terraform init
+            
+          - name: Terraform Apply
+            working-directory: 'terraform'
+            run: terraform apply -auto-approve
+
+          - name: Terraform Output
+            working-directory: 'terraform'
+            id: output
+            run: terraform output > ../terraform.log
+
+          - name: Upload actifacts
+            uses: actions/upload-artifact@v2
+            with:
+              name: terraform
+              path: terraform.log
