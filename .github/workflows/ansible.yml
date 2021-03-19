@@ -3,7 +3,7 @@ name: 'Ansible'
 on:
   workflow_run:
     workflows:
-      - Terraform
+      - docker
     types: 
       - completed
     branches:

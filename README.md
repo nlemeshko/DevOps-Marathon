@@ -1,8 +1,8 @@
 # DevOps Marathon
 
-[![docker](https://github.com/nlemeshko/DevOps-Marathon-1/actions/workflows/docker.yml/badge.svg)](https://github.com/nlemeshko/DevOps-Marathon-1/actions/workflows/docker.yml)
-[![Terraform](https://github.com/nlemeshko/DevOps-Marathon-1/actions/workflows/terraform.yml/badge.svg)](https://github.com/nlemeshko/DevOps-Marathon-1/actions/workflows/terraform.yml)
-[![Ansible](https://github.com/nlemeshko/DevOps-Marathon-1/actions/workflows/ansible.yml/badge.svg)](https://github.com/nlemeshko/DevOps-Marathon-1/actions/workflows/ansible.yml)
+[![docker](https://github.com/nlemeshko/DevOps-Marathon/actions/workflows/docker.yml/badge.svg)](https://github.com/nlemeshko/DevOps-Marathon/actions/workflows/docker.yml)
+[![Terraform](https://github.com/nlemeshko/DevOps-Marathon/actions/workflows/terraform.yml/badge.svg)](https://github.com/nlemeshko/DevOps-Marathon/actions/workflows/terraform.yml)
+[![Ansible](https://github.com/nlemeshko/DevOps-Marathon/actions/workflows/ansible.yml/badge.svg)](https://github.com/nlemeshko/DevOps-Marathon/actions/workflows/ansible.yml)
 
 # Info:
 
