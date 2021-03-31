@@ -52,7 +52,6 @@ You can send to Bot /command [example] and and this will execute on the remote s
 - *Push*
 - *Wait*
 - ...
-- ...
 - *Profit*
 
 
